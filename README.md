@@ -1,7 +1,7 @@
 ![](logo.png)
 
 # simpline
-Simple constant-speed natural cubic spline interpolator for 3D points.
+simpline is a simple constant-speed natural cubic spline interpolation library for 3D points.
 
 ## Compilation
 To compile this library and install it, in a terminal window, go to the root folder of the library and enter the following commands:
