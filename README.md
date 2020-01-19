@@ -1,3 +1,5 @@
+![](logo.png)
+
 # simpline
 Simple constant-speed natural cubic spline interpolator for 3D points.
 
