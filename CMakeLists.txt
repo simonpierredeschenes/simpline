@@ -27,12 +27,8 @@ install(FILES simpline/Simpline.h
 configure_file(simplineConfig.cmake.in
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/simplineConfig.cmake" @ONLY
   )
-configure_file(simplineConfigVersion.cmake.in
-  "${PROJECT_BINARY_DIR}/simplineConfigVersion.cmake" @ONLY
-  )
 install(FILES
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/simplineConfig.cmake"
-  "${PROJECT_BINARY_DIR}/simplineConfigVersion.cmake"
   DESTINATION ${DEF_INSTALL_CMAKE_DIR}
   COMPONENT dev
   )
