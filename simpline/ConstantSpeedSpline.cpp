@@ -38,9 +38,9 @@ T simpline<T>::ConstantSpeedSpline::computeDistance(const T& time) const
 		return timeDistances.at(time);
 	}
 	
-	const T wantedSplineLength = speed * time;
 	const auto nextTimeDistance = timeDistances.upper_bound(time);
 	const auto previousTimeDistance = std::prev(nextTimeDistance);
+	const T wantedSplineLength = (speed * time) - parametrizedSpline.computePartLength(0, previousTimeDistance->second);
 	
 	// bisection method
 	T lowerBoundT = previousTimeDistance->second;
@@ -49,8 +49,8 @@ T simpline<T>::ConstantSpeedSpline::computeDistance(const T& time) const
 	while(upperBoundT - lowerBoundT > epsilon)
 	{
 		const T middleT = (lowerBoundT + upperBoundT) / 2;
-		const T lowerBoundSplineLength = parametrizedSpline.computePartLength(0, lowerBoundT); // only compute partial spline length?
-		const T middleSplineLength = parametrizedSpline.computePartLength(0, middleT);
+		const T lowerBoundSplineLength = parametrizedSpline.computePartLength(previousTimeDistance->second, lowerBoundT);
+		const T middleSplineLength = parametrizedSpline.computePartLength(previousTimeDistance->second, middleT);
 		
 		if((lowerBoundSplineLength - wantedSplineLength) * (middleSplineLength - wantedSplineLength) < 0)
 		{
