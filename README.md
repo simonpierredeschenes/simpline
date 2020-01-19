@@ -12,7 +12,20 @@ make
 sudo make install
 ```
 
-## Usage example
+## Using simpline in CMake Projects
+This library provides CMake support and can be used in one of your projects as in the following example:
+```cmake
+cmake_minimum_required(VERSION 2.8.3)
+project(example_project)
+
+find_package(simpline)
+
+include_directories(${simpline_INCLUDE_DIRS})
+add_executable(example example.cpp)
+target_link_libraries(example ${simpline_LIBRARIES})
+```
+
+## Usage Example
 Here is a code example of how the library can be used:
 ```c++
 #include <simpline/Simpline.h>
