@@ -7,7 +7,7 @@ set(EXTERNAL_INCLUDE_DIRS "")
 set(EXTERNAL_LIBS "")
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-set(EXTERNAL_LIBS ${EXTERNAL_LIBS} Eigen3::Eigen)
+set(EXTERNAL_INCLUDE_DIRS ${EXTERNAL_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
 
 add_library(simpline SHARED simpline/ParametrizedSpline.cpp simpline/ConstantSpeedSpline.cpp)
 
