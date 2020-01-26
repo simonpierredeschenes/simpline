@@ -42,6 +42,11 @@ T simpline<T>::ConstantSpeedSpline::computeDistance(const T& time) const
 	const auto previousTimeDistance = std::prev(nextTimeDistance);
 	const T wantedSplineLength = (speed * time) - parametrizedSpline.computePartLength(0, previousTimeDistance->second);
 	
+	if(wantedSplineLength <= 0)
+	{
+		return previousTimeDistance->second;
+	}
+	
 	// bisection method
 	T lowerBoundT = previousTimeDistance->second;
 	T upperBoundT = nextTimeDistance->second;
