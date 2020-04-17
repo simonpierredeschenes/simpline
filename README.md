@@ -45,16 +45,17 @@ const std::vector<Eigen::Vector3f> points = {
 
 int main(int argc, char** argv)
 {
-	simpline<float>::ConstantSpeedSpline spline(points, 0.5);
+	const float speed = 0.5;
+	simpline<float>::ConstantSpeedSpline trajectory(points, speed);
 	
 	float currentTime = 0.0;
-	while(currentTime <= spline.getDuration())
+	while(currentTime <= trajectory.getDuration())
 	{
 		std::cout << "Position (" << currentTime << "s):" << std::endl;
-		std::cout << spline.getPosition(currentTime) << std::endl << std::endl;
+		std::cout << trajectory.getPosition(currentTime) << std::endl << std::endl;
 		
-		std::cout << "Gradient (" << currentTime << "s):" << std::endl;
-		std::cout << spline.getGradient(currentTime) << std::endl << std::endl;
+		std::cout << "Velocity (" << currentTime << "s):" << std::endl;
+		std::cout << trajectory.getGradient(currentTime) << std::endl << std::endl;
 		
 		currentTime += 1.0;
 	}
