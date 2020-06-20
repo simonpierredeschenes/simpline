@@ -5,6 +5,16 @@ template<typename T>
 simpline<T>::ConstantSpeedSpline::ConstantSpeedSpline(std::vector<simpline<T>::Vector3> points, T speed):
 		speed(speed)
 {
+	if(points.size() < 2)
+	{
+		throw std::runtime_error("Point list must contain at least two items!");
+	}
+	
+	if(speed <= 0)
+	{
+		throw std::runtime_error("Speed must be above 0!");
+	}
+	
 	std::vector<T> distances = { 0 };
 	for(int i = 1; i < points.size(); i++)
 	{
@@ -73,9 +83,9 @@ T simpline<T>::ConstantSpeedSpline::computeDistance(const T& time) const
 template<typename T>
 typename simpline<T>::Vector3 simpline<T>::ConstantSpeedSpline::getPosition(const T& time) const
 {
-	if(time > duration)
+	if(time < 0.0 || time > duration)
 	{
-		throw std::runtime_error("Requested time " + std::to_string(time) + " is too high! Max time is " + std::to_string(duration) + ".");
+		throw std::runtime_error("Position requested at time=" + std::to_string(time) + ". Time must be between 0.0 and " + std::to_string(duration) + ".");
 	}
 	
 	return parametrizedSpline.getPosition(computeDistance(time));
@@ -84,13 +94,14 @@ typename simpline<T>::Vector3 simpline<T>::ConstantSpeedSpline::getPosition(cons
 template<typename T>
 typename simpline<T>::Vector3 simpline<T>::ConstantSpeedSpline::getGradient(const T& time) const
 {
-	if(time > duration)
+	if(time < 0.0 || time > duration)
 	{
-		throw std::runtime_error("Requested time " + std::to_string(time) + " is too high! Max time is " + std::to_string(duration) + ".");
+		throw std::runtime_error("Gradient requested at time=" + std::to_string(time) + ". Time must be between 0.0 and " + std::to_string(duration) + ".");
 	}
 	
 	return parametrizedSpline.getGradient(computeDistance(time)).normalized() * speed;
 }
 
 template class simpline<float>::ConstantSpeedSpline;
+
 template class simpline<double>::ConstantSpeedSpline;

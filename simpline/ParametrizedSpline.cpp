@@ -10,9 +10,9 @@ template<typename T>
 simpline<T>::ParametrizedSpline::ParametrizedSpline(const std::vector<T>& ts, const std::vector<simpline<T>::Vector3>& points):
 		ts(ts), points(points), firstDerivatives(points.size() - 1), secondDerivatives(points.size()), thirdDerivatives(points.size() - 1), finiteDifferences()
 {
-	if(points.size() == 0)
+	if(points.size() < 2)
 	{
-		throw std::runtime_error("Point list must contain at least one item!");
+		throw std::runtime_error("Point list must contain at least two items!");
 	}
 	
 	if(ts.size() != points.size())
@@ -122,6 +122,12 @@ typename simpline<T>::Vector3 simpline<T>::ParametrizedSpline::computeFiniteDiff
 template<typename T>
 typename simpline<T>::Vector3 simpline<T>::ParametrizedSpline::getPosition(const T& t) const
 {
+	if(t < ts[0] || t > ts[ts.size() - 1])
+	{
+		throw std::runtime_error("Position requested at t=" + std::to_string(t) + ". t must be between " + std::to_string(ts[0]) + " and " +
+								 std::to_string(ts[ts.size() - 1]) + ".");
+	}
+	
 	int previousIndex = 0;
 	while(previousIndex < ts.size() - 1 && ts[previousIndex + 1] <= t)
 	{
@@ -137,6 +143,12 @@ typename simpline<T>::Vector3 simpline<T>::ParametrizedSpline::getPosition(const
 template<typename T>
 typename simpline<T>::Vector3 simpline<T>::ParametrizedSpline::getGradient(const T& t) const
 {
+	if(t < ts[0] || t > ts[ts.size() - 1])
+	{
+		throw std::runtime_error("Gradient requested at t=" + std::to_string(t) + ". t must be between " + std::to_string(ts[0]) + " and " +
+								 std::to_string(ts[ts.size() - 1]) + ".");
+	}
+	
 	int previousIndex = 0;
 	while(previousIndex < ts.size() - 1 && ts[previousIndex + 1] <= t)
 	{
@@ -151,8 +163,20 @@ typename simpline<T>::Vector3 simpline<T>::ParametrizedSpline::getGradient(const
 template<typename T>
 T simpline<T>::ParametrizedSpline::computePartLength(const T& t_start, const T& t_end) const
 {
+	if(t_start > t_end)
+	{
+		throw std::runtime_error("Part length requested from t=" + std::to_string(t_start) + " to t=" + std::to_string(t_end) +
+								 ". End time must be greater or equal to start time.");
+	}
+	
+	if(t_start < ts[0] || t_end > ts[ts.size() - 1])
+	{
+		throw std::runtime_error("Part length requested from t=" + std::to_string(t_start) + " to t=" + std::to_string(t_end) + ". t must be between " +
+								 std::to_string(ts[0]) + " and " + std::to_string(ts[ts.size() - 1]) + ".");
+	}
+	
 	int firstPointIndex = 0;
-	while(firstPointIndex < ts.size() && ts[firstPointIndex] < t_start)
+	while(firstPointIndex < ts.size() - 1 && ts[firstPointIndex] < t_start)
 	{
 		firstPointIndex++;
 	}
@@ -165,6 +189,19 @@ T simpline<T>::ParametrizedSpline::computePartLength(const T& t_start, const T& 
 	
 	// Gaussian quadrature spline length computation, taken from https://medium.com/@all2one/how-to-compute-the-length-of-a-spline-e44f5f04c40
 	T length = 0.0;
+	
+	// special case for when t_start and t_end are in the same spline segment
+	if(firstPointIndex > lastPointIndex)
+	{
+		T intervalLength = t_end - t_start;
+		for(size_t i = 0; i < gaussianQuadratureAbcissa.size(); i++)
+		{
+			const T t = t_start + (((gaussianQuadratureAbcissa[i] + 1.0) / 2.0) * intervalLength); // Change of interval from [-1, 1]
+			length += (intervalLength / 2.0) * getGradient(t).norm() * gaussianQuadratureWeights[i]; // Same for (intervalLength / 2.0)
+		}
+		return length;
+	}
+	
 	// start partial spline segment computation
 	T startIntervalLength = ts[firstPointIndex] - t_start;
 	for(size_t i = 0; i < gaussianQuadratureAbcissa.size(); i++)
@@ -194,4 +231,5 @@ T simpline<T>::ParametrizedSpline::computePartLength(const T& t_start, const T& 
 }
 
 template class simpline<float>::ParametrizedSpline;
+
 template class simpline<double>::ParametrizedSpline;

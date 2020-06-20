@@ -1,7 +1,6 @@
 #ifndef SIMPLINE_SIMPLINE_H
 #define SIMPLINE_SIMPLINE_H
 
-
 #include <Eigen/Dense>
 #include <vector>
 #include <map>
@@ -16,9 +15,13 @@ struct simpline
 	{
 	public:
 		ParametrizedSpline();
+		
 		ParametrizedSpline(const std::vector<T>& ts, const std::vector<simpline<T>::Vector3>& points);
+		
 		simpline<T>::Vector3 getPosition(const T& t) const;
+		
 		simpline<T>::Vector3 getGradient(const T& t) const;
+		
 		T computePartLength(const T& t_start, const T& t_end) const;
 	
 	private:
@@ -52,6 +55,5 @@ struct simpline
 		ParametrizedSpline parametrizedSpline;
 	};
 };
-
 
 #endif
