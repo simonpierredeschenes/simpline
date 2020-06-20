@@ -89,7 +89,7 @@ typename simpline<T>::Vector3 simpline<T>::ConstantSpeedSpline::getGradient(cons
 		throw std::runtime_error("Requested time " + std::to_string(time) + " is too high! Max time is " + std::to_string(duration) + ".");
 	}
 	
-	return parametrizedSpline.getGradient(computeDistance(time));
+	return parametrizedSpline.getGradient(computeDistance(time)).normalized() * speed;
 }
 
 template class simpline<float>::ConstantSpeedSpline;
