@@ -2,6 +2,11 @@
 #include "Constants.h"
 
 template<typename T>
+simpline<T>::ConstantSpeedSpline::ConstantSpeedSpline()
+{
+}
+
+template<typename T>
 simpline<T>::ConstantSpeedSpline::ConstantSpeedSpline(std::vector<simpline<T>::Vector3> points, T speed):
 		speed(speed)
 {
@@ -16,20 +21,20 @@ simpline<T>::ConstantSpeedSpline::ConstantSpeedSpline(std::vector<simpline<T>::V
 	}
 	
 	std::vector<T> distances = { 0 };
-	for(int i = 1; i < points.size(); i++)
+	for(size_t i = 1; i < points.size(); i++)
 	{
 		distances.push_back(distances[i - 1] + (points[i] - points[i - 1]).norm());
 	}
 	parametrizedSpline = ParametrizedSpline(distances, points);
 	
-	T splineLength = parametrizedSpline.computePartLength(0, distances[distances.size() - 1]);
+	T splineLength = parametrizedSpline.computeLength(0, distances[distances.size() - 1]);
 	duration = splineLength / speed;
 	
 	T time = 0;
 	for(size_t i = 0; i < distances.size() - 1; i++)
 	{
 		timeDistances[time] = distances[i];
-		time += (parametrizedSpline.computePartLength(distances[i], distances[i + 1]) / splineLength) * duration;
+		time += (parametrizedSpline.computeLength(distances[i], distances[i + 1]) / splineLength) * duration;
 	}
 	timeDistances[duration] = distances[distances.size() - 1];
 }
@@ -50,7 +55,7 @@ T simpline<T>::ConstantSpeedSpline::computeDistance(const T& time) const
 	
 	const auto nextTimeDistance = timeDistances.upper_bound(time);
 	const auto previousTimeDistance = std::prev(nextTimeDistance);
-	const T wantedSplineLength = (speed * time) - parametrizedSpline.computePartLength(0, previousTimeDistance->second);
+	const T wantedSplineLength = (speed * time) - parametrizedSpline.computeLength(0, previousTimeDistance->second);
 	
 	if(wantedSplineLength <= 0)
 	{
@@ -64,8 +69,8 @@ T simpline<T>::ConstantSpeedSpline::computeDistance(const T& time) const
 	while(upperBoundT - lowerBoundT > epsilon)
 	{
 		const T middleT = (lowerBoundT + upperBoundT) / 2;
-		const T lowerBoundSplineLength = parametrizedSpline.computePartLength(previousTimeDistance->second, lowerBoundT);
-		const T middleSplineLength = parametrizedSpline.computePartLength(previousTimeDistance->second, middleT);
+		const T lowerBoundSplineLength = parametrizedSpline.computeLength(previousTimeDistance->second, lowerBoundT);
+		const T middleSplineLength = parametrizedSpline.computeLength(previousTimeDistance->second, middleT);
 		
 		if((lowerBoundSplineLength - wantedSplineLength) * (middleSplineLength - wantedSplineLength) < 0)
 		{
@@ -88,7 +93,7 @@ typename simpline<T>::Vector3 simpline<T>::ConstantSpeedSpline::getPosition(cons
 		throw std::runtime_error("Position requested at time=" + std::to_string(time) + ". Time must be between 0.0 and " + std::to_string(duration) + ".");
 	}
 	
-	return parametrizedSpline.getPosition(computeDistance(time));
+	return parametrizedSpline.getValue(computeDistance(time));
 }
 
 template<typename T>
