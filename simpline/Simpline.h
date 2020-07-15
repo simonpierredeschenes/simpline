@@ -22,7 +22,9 @@ struct simpline
 		
 		simpline<T>::Vector3 getGradient(const T& parameterValue) const;
 		
-		T computeLength(const T& startParameterValue, const T& endParameterValue) const;
+		T getLength() const;
+		
+		T getLength(const T& startParameterValue, const T& endParameterValue) const;
 	
 	private:
 		simpline<T>::Vector3 computeFiniteDifference(const size_t& startPointIndex, const size_t& endPointIndex);
@@ -42,19 +44,25 @@ struct simpline
 		
 		ConstantSpeedSpline(std::vector<simpline<T>::Vector3> points, T speed);
 		
-		T getDuration() const;
-		
-		simpline<T>::Vector3 getPosition(const T& time) const;
+		simpline<T>::Vector3 getValue(const T& time) const;
 		
 		simpline<T>::Vector3 getGradient(const T& time) const;
+		
+		T getLength() const;
+		
+		T getLength(const T& startTime, const T& endTime) const;
+		
+		T getSpeed() const;
+		
+		T getDuration() const;
 	
 	private:
-		T computeDistance(const T& time) const;
+		T computeParameterValue(const T& time) const;
 		
-		T duration;
-		T speed;
-		std::map<T, T> timeDistances;
+		std::map<T, T> timeParameterValues;
 		ParametrizedSpline parametrizedSpline;
+		T speed;
+		T duration;
 	};
 };
 

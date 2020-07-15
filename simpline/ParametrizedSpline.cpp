@@ -147,6 +147,11 @@ typename simpline<T>::Vector3 simpline<T>::ParametrizedSpline::computeFiniteDiff
 template<typename T>
 typename simpline<T>::Vector3 simpline<T>::ParametrizedSpline::getValue(const T& parameterValue) const
 {
+	if(parameterValues.size() == 0)
+	{
+		throw std::runtime_error("Cannot get value from empty parametrized spline. Use non-default constructor to provide points.");
+	}
+	
 	if(parameterValue < parameterValues[0] || parameterValue > parameterValues[parameterValues.size() - 1])
 	{
 		throw std::runtime_error("Value requested at parameterValue=" + std::to_string(parameterValue) + ". Parameter Value must be between " +
@@ -168,6 +173,11 @@ typename simpline<T>::Vector3 simpline<T>::ParametrizedSpline::getValue(const T&
 template<typename T>
 typename simpline<T>::Vector3 simpline<T>::ParametrizedSpline::getGradient(const T& parameterValue) const
 {
+	if(parameterValues.size() == 0)
+	{
+		throw std::runtime_error("Cannot get gradient from empty parametrized spline. Use non-default constructor to provide points.");
+	}
+	
 	if(parameterValue < parameterValues[0] || parameterValue > parameterValues[parameterValues.size() - 1])
 	{
 		throw std::runtime_error("Gradient requested at parameterValue=" + std::to_string(parameterValue) + ". Parameter Value must be between " +
@@ -186,8 +196,36 @@ typename simpline<T>::Vector3 simpline<T>::ParametrizedSpline::getGradient(const
 }
 
 template<typename T>
-T simpline<T>::ParametrizedSpline::computeLength(const T& startParameterValue, const T& endParameterValue) const
+T simpline<T>::ParametrizedSpline::getLength() const
 {
+	if(parameterValues.size() == 0)
+	{
+		throw std::runtime_error("Cannot get length of empty parametrized spline. Use non-default constructor to provide points.");
+	}
+	
+	// Gaussian quadrature spline length computation, taken from https://medium.com/@all2one/how-to-compute-the-length-of-a-spline-e44f5f04c40
+	T length = 0.0;
+	for(size_t i = 0; i < parameterValues.size() - 1; i++)
+	{
+		T intervalLength = parameterValues[i + 1] - parameterValues[i];
+		for(size_t j = 0; j < gaussianQuadratureAbcissa.size(); j++)
+		{
+			const T t = parameterValues[i] + (((gaussianQuadratureAbcissa[j] + 1.0) / 2.0) * intervalLength); // Change of interval from [-1, 1]
+			length += (intervalLength / 2.0) * getGradient(t).norm() * gaussianQuadratureWeights[j]; // Same for (intervalLength / 2.0)
+		}
+	}
+	
+	return length;
+}
+
+template<typename T>
+T simpline<T>::ParametrizedSpline::getLength(const T& startParameterValue, const T& endParameterValue) const
+{
+	if(parameterValues.size() == 0)
+	{
+		throw std::runtime_error("Cannot get length of empty parametrized spline. Use non-default constructor to provide points.");
+	}
+	
 	if(startParameterValue > endParameterValue)
 	{
 		throw std::runtime_error("Length requested from parameterValue=" + std::to_string(startParameterValue) + " to parameterValue=" +
