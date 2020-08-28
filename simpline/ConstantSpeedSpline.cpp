@@ -7,8 +7,8 @@ simpline<T>::ConstantSpeedSpline::ConstantSpeedSpline()
 }
 
 template<typename T>
-simpline<T>::ConstantSpeedSpline::ConstantSpeedSpline(std::vector<simpline<T>::Vector3> points, T speed):
-		speed(speed)
+simpline<T>::ConstantSpeedSpline::ConstantSpeedSpline(const std::vector<simpline<T>::Vector3>& points, const T& speed):
+		timeParameterValues(), parametrizedSpline(), speed(speed), duration()
 {
 	if(points.size() < 2)
 	{

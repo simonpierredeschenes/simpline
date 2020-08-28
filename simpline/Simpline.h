@@ -42,7 +42,7 @@ struct simpline
 	public:
 		ConstantSpeedSpline();
 		
-		ConstantSpeedSpline(std::vector<simpline<T>::Vector3> points, T speed);
+		ConstantSpeedSpline(const std::vector<simpline<T>::Vector3>& points, const T& speed);
 		
 		simpline<T>::Vector3 getValue(const T& time) const;
 		
