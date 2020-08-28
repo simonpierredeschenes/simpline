@@ -52,14 +52,14 @@ int main(int argc, char** argv)
 	while(currentTime <= trajectory.getDuration())
 	{
 		std::cout << "Position (" << currentTime << "s):" << std::endl;
-		std::cout << trajectory.getPosition(currentTime) << std::endl << std::endl;
+		std::cout << trajectory.getValue(currentTime) << std::endl << std::endl;
 		
 		std::cout << "Velocity (" << currentTime << "s):" << std::endl;
 		std::cout << trajectory.getGradient(currentTime) << std::endl << std::endl;
 		
 		currentTime += 1.0;
 	}
-
+	
 	return 0;
 }
 ```
